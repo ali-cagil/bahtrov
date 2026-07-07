@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Team = {
   name: string;
@@ -36,6 +36,21 @@ function TeamIcon({ team }: { team: string }) {
 }
 
 export default function Home() {
+  const [activeTeam, setActiveTeam] = useState<Team | null>(null);
+  const [depth, setDepth] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setDepth(max > 0 ? Math.min(window.scrollY / max, 1) : 0);
+    };
+
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const sections = ["Mission", "Vehicle", "Team", "Sponsors", "Contact"];
 
   const vehicleCards = [
@@ -79,38 +94,82 @@ export default function Home() {
     },
   ];
 
-  const [activeTeam, setActiveTeam] = useState<Team | null>(null);
+  const surfaceLight = Math.max(0.12, 1 - depth * 1.15);
+  const deepDarkness = Math.min(0.75, depth * 0.9);
+  const particleOpacity = 0.25 + depth * 0.45;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#082f49_0%,#061f3a_30%,#031426_65%,#010814_100%)] text-white">
+    <main
+      className="relative min-h-screen overflow-hidden text-white"
+      style={{
+        background: `linear-gradient(135deg,
+          rgb(${8 - depth * 5}, ${47 - depth * 34}, ${73 - depth * 48}) 0%,
+          rgb(${6 - depth * 5}, ${31 - depth * 22}, ${58 - depth * 40}) 32%,
+          rgb(${3 - depth * 2}, ${20 - depth * 15}, ${38 - depth * 26}) 68%,
+          rgb(1, ${8 - depth * 5}, ${20 - depth * 12}) 100%
+        )`,
+      }}
+    >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_0%,rgba(125,211,252,0.35),transparent_35%),radial-gradient(circle_at_80%_55%,rgba(14,165,233,0.16),transparent_35%)]" />
-        <div className="absolute left-0 top-0 h-[45vh] w-full bg-[linear-gradient(180deg,rgba(186,230,253,0.16),transparent)]" />
-        <div className="light-ray left-[18%]" />
-        <div className="light-ray left-[46%]" />
-        <div className="light-ray left-[72%]" />
+        <div
+          className="absolute inset-0 transition-opacity duration-300"
+          style={{
+            opacity: surfaceLight,
+            background:
+              "radial-gradient(circle at 35% 0%, rgba(125,211,252,0.38), transparent 35%), radial-gradient(circle at 80% 55%, rgba(14,165,233,0.16), transparent 35%)",
+          }}
+        />
 
-        {Array.from({ length: 14 }).map((_, i) => (
-          <div key={`fish-${i}`} className={`fish fish-${(i % 6) + 1}`}>
+        <div
+          className="absolute left-0 top-0 h-[45vh] w-full transition-opacity duration-300"
+          style={{
+            opacity: surfaceLight,
+            background: "linear-gradient(180deg, rgba(186,230,253,0.18), transparent)",
+          }}
+        />
+
+        <div
+          className="absolute inset-0 bg-black transition-opacity duration-300"
+          style={{ opacity: deepDarkness }}
+        />
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.55)_100%)]" />
+
+        <div className="light-ray left-[18%]" style={{ opacity: surfaceLight }} />
+        <div className="light-ray left-[46%]" style={{ opacity: surfaceLight * 0.85 }} />
+        <div className="light-ray left-[72%]" style={{ opacity: surfaceLight * 0.7 }} />
+
+        <div className="abyss-fog" style={{ opacity: depth * 0.55 }} />
+
+        {Array.from({ length: 22 }).map((_, i) => (
+          <div
+            key={`fish-${i}`}
+            className={`fish fish-${(i % 6) + 1}`}
+            style={{
+              opacity: 0.12 + particleOpacity * 0.35,
+              transform: `translateY(${depth * (i % 4) * 16}px)`,
+            }}
+          >
             {["𓆝", "𓆟", "𓆜"][i % 3]}
           </div>
         ))}
 
-        {Array.from({ length: 45 }).map((_, i) => (
+        {Array.from({ length: 75 }).map((_, i) => (
           <div
             key={`bubble-${i}`}
             className="bubble"
             style={{
               left: `${(i * 17) % 100}%`,
-              width: `${6 + (i % 5) * 4}px`,
-              height: `${6 + (i % 5) * 4}px`,
-              animationDelay: `${(i % 12) * 0.8}s`,
-              animationDuration: `${10 + (i % 9)}s`,
+              width: `${5 + (i % 6) * 4}px`,
+              height: `${5 + (i % 6) * 4}px`,
+              animationDelay: `${(i % 14) * 0.65}s`,
+              animationDuration: `${8 + (i % 10)}s`,
+              opacity: particleOpacity,
             }}
           />
         ))}
 
-        {Array.from({ length: 28 }).map((_, i) => (
+        {Array.from({ length: 46 }).map((_, i) => (
           <div
             key={`star-${i}`}
             className="star"
@@ -118,6 +177,7 @@ export default function Home() {
               left: `${(i * 29) % 100}%`,
               top: `${10 + ((i * 23) % 82)}%`,
               animationDelay: `${i * 0.25}s`,
+              opacity: 0.12 + depth * 0.45,
             }}
           >
             ✦
@@ -235,13 +295,15 @@ export default function Home() {
       </section>
 
       <section id="sponsors" className="relative z-10 px-6 py-32">
-        <div className="mx-auto max-w-6xl rounded-[3rem] border border-cyan-200/10 bg-white/5 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
-          <p className="text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
-          <h2 className="mt-4 text-4xl font-black md:text-6xl">
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-white/5 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
+          <div className="pointer-events-none absolute left-1/2 top-0 h-full w-[55%] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.18),transparent_65%)]" />
+
+          <p className="relative text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
+          <h2 className="relative mt-4 text-4xl font-black md:text-6xl">
             Support the next generation of engineers.
           </h2>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="relative mt-12 grid gap-6 md:grid-cols-3">
             {["Gold Sponsor", "Silver Sponsor", "Bronze Sponsor"].map((item) => (
               <div key={item} className="flex h-44 items-center justify-center rounded-[2rem] border border-dashed border-white/30 bg-white/5 text-white/60 backdrop-blur-xl">
                 {item}
@@ -252,12 +314,14 @@ export default function Home() {
       </section>
 
       <section id="contact" className="relative z-10 px-6 py-36 text-center">
-        <h2 className="text-4xl font-black md:text-6xl">Join Our Mission</h2>
-        <p className="mx-auto mt-6 max-w-2xl text-white/65">
+        <div className="pointer-events-none absolute left-1/2 top-8 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-300/10 blur-3xl" />
+
+        <h2 className="relative text-4xl font-black md:text-6xl">Join Our Mission</h2>
+        <p className="relative mx-auto mt-6 max-w-2xl text-white/65">
           Partner with BAHT and help us build the future of underwater robotics.
         </p>
 
-        <a href="mailto:info@baht.com" className="mt-10 inline-block rounded-full bg-white px-10 py-4 font-bold text-slate-950 transition hover:bg-cyan-200">
+        <a href="mailto:info@baht.com" className="relative mt-10 inline-block rounded-full bg-white px-10 py-4 font-bold text-slate-950 transition hover:bg-cyan-200">
           Contact Us
         </a>
       </section>
@@ -296,14 +360,25 @@ export default function Home() {
           height: 120vh;
           width: 120px;
           transform: rotate(18deg);
-          background: linear-gradient(to bottom, rgba(186,230,253,0.16), transparent 70%);
+          background: linear-gradient(to bottom, rgba(186,230,253,0.18), transparent 70%);
           filter: blur(18px);
           animation: rayMove 8s ease-in-out infinite alternate;
+          transition: opacity 300ms ease;
         }
 
         @keyframes rayMove {
-          from { opacity: 0.25; transform: rotate(18deg) translateX(-20px); }
-          to { opacity: 0.6; transform: rotate(18deg) translateX(20px); }
+          from { transform: rotate(18deg) translateX(-20px); }
+          to { transform: rotate(18deg) translateX(20px); }
+        }
+
+        .abyss-fog {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(circle at 20% 80%, rgba(14,165,233,0.12), transparent 35%),
+            radial-gradient(circle at 80% 90%, rgba(34,211,238,0.08), transparent 40%);
+          filter: blur(28px);
+          transition: opacity 300ms ease;
         }
 
         .fish {
@@ -322,8 +397,8 @@ export default function Home() {
         .fish-6 { top: 86%; animation-duration: 33s; animation-delay: 9s; font-size: 20px; }
 
         @keyframes swim {
-          from { transform: translateX(0); }
-          to { transform: translateX(125vw); }
+          from { translate: 0 0; }
+          to { translate: 125vw 0; }
         }
 
         .bubble {
@@ -349,8 +424,8 @@ export default function Home() {
         }
 
         @keyframes pulse {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.85; transform: scale(1.5); }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.5); }
         }
 
         .mechanical-icon {
