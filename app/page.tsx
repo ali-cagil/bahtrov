@@ -55,7 +55,6 @@ export default function Home() {
 
   const cinematicDepth = 1 - Math.pow(1 - depth, 2.4);
   const abyssDepth = Math.max(0, (cinematicDepth - 0.56) / 0.44);
-  const rovReveal = Math.max(0, (cinematicDepth - 0.68) / 0.32);
 
   const fish = useMemo(() => Array.from({ length: 28 }), []);
   const bubbles = useMemo(() => Array.from({ length: 92 }), []);
@@ -77,19 +76,39 @@ export default function Home() {
     },
   ];
 
-  const telemetry = [
-    ["DEPTH", `${Math.round(cinematicDepth * 300)}M`],
-    ["SIGNAL", "STABLE"],
-    ["PAYLOAD", "READY"],
-    ["BAHT-01", "ONLINE"],
-  ];
-
   const dashboard = [
     ["Pressure", `${(1 + cinematicDepth * 30).toFixed(1)} bar`],
     ["Battery", "15.8V"],
     ["Thrusters", "6 ACTIVE"],
     ["Tether Link", "ETHERNET"],
     ["Camera Feed", "H.264 LIVE"],
+  ];
+
+  const sponsorTiers = [
+    {
+      name: "Platinum Partner",
+      label: "Flagship Support",
+      description: "Premium visibility across the BAHT website, vehicle branding, competition materials, social media announcements, and technical showcase content.",
+      benefits: ["Primary logo placement", "Vehicle branding area", "Competition visibility", "Engineering showcase feature"],
+    },
+    {
+      name: "Gold Sponsor",
+      label: "Core Mission Support",
+      description: "High-impact sponsorship for companies supporting underwater robotics, student engineering, prototyping, testing, and field operations.",
+      benefits: ["Large logo placement", "Sponsor highlight section", "Social media mention", "Event presentation visibility"],
+    },
+    {
+      name: "Silver Sponsor",
+      label: "Development Support",
+      description: "Ideal for organizations that want to contribute to components, manufacturing, electronics, materials, software, and team logistics.",
+      benefits: ["Logo on sponsor wall", "Website recognition", "Team appreciation post", "Competition deck listing"],
+    },
+    {
+      name: "Technical Partner",
+      label: "Engineering Collaboration",
+      description: "For companies providing parts, manufacturing support, software tools, sensors, machining, materials, or technical mentorship.",
+      benefits: ["Technical partner badge", "Product/service mention", "Use-case visibility", "Project collaboration credit"],
+    },
   ];
 
   const teams: Team[] = [
@@ -135,7 +154,6 @@ export default function Home() {
         )`,
         "--depth": cinematicDepth,
         "--abyss": abyssDepth,
-        "--rov": rovReveal,
       } as React.CSSProperties}
     >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -373,55 +391,86 @@ export default function Home() {
       </section>
 
       <section id="sponsors" className="relative z-10 px-6 py-32">
-        <div className="rov-reveal pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2" style={{ opacity: rovReveal }}>
-          <div className="rov-body">
-            <div className="rov-frame" />
-            <div className="rov-light rov-light-left" />
-            <div className="rov-light rov-light-right" />
-          </div>
+        <div className="mx-auto max-w-6xl">
+          <div className="relative overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-black/25 p-8 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)] md:p-12">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(103,232,249,0.18),transparent_42%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(103,232,249,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,0.04)_1px,transparent_1px)] bg-[size:34px_34px]" />
 
-          <div className="headlight headlight-left" />
-          <div className="headlight headlight-right" />
+            <div className="relative">
+              <p className="text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
+              <h2 className="mt-4 max-w-4xl text-4xl font-black md:text-6xl">
+                Power the next generation of underwater robotics.
+              </h2>
+              <p className="mt-6 max-w-3xl text-white/60">
+                BAHT partners with forward-thinking companies to develop competition-ready underwater systems, support student engineering, and create professional visibility for sponsors across web, events, vehicle branding, and technical showcases.
+              </p>
+            </div>
 
-          <div className="hud-panel hud-left">
-            {telemetry.slice(0, 2).map(([label, value]) => (
-              <div key={label} className="hud-row">
-                <span>{label}</span>
-                <strong>{value}</strong>
+            <div className="relative mt-12 grid gap-6 lg:grid-cols-2">
+              {sponsorTiers.map((tier) => (
+                <div key={tier.name} className="sponsor-tier group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-7 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-cyan-200/40 hover:bg-cyan-200/[0.08] hover:shadow-[0_0_55px_rgba(34,211,238,0.16)]">
+                  <div className="absolute right-0 top-0 h-32 w-32 translate-x-10 -translate-y-10 rounded-full bg-cyan-200/10 blur-2xl transition group-hover:bg-cyan-200/20" />
+
+                  <div className="relative">
+                    <p className="text-xs font-bold uppercase tracking-[0.35em] text-cyan-200/80">
+                      {tier.label}
+                    </p>
+
+                    <h3 className="mt-4 text-2xl font-black text-white">
+                      {tier.name}
+                    </h3>
+
+                    <p className="mt-4 text-sm leading-7 text-white/58">
+                      {tier.description}
+                    </p>
+
+                    <div className="mt-6 grid gap-3">
+                      {tier.benefits.map((benefit) => (
+                        <div key={benefit} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70">
+                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-200 shadow-[0_0_12px_rgba(103,232,249,0.9)]" />
+                          {benefit}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative mt-12 overflow-hidden rounded-[2rem] border border-cyan-200/15 bg-cyan-200/[0.08] p-8 md:p-10">
+              <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.18),transparent_65%)]" />
+
+              <div className="relative grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.35em] text-cyan-200">
+                    Become Our Partner
+                  </p>
+                  <h3 className="mt-3 text-3xl font-black">
+                    Help BAHT dive deeper.
+                  </h3>
+                  <p className="mt-4 max-w-2xl text-white/60">
+                    Sponsor funding and technical partnerships directly support ROV manufacturing, electronics, testing, sensors, competition logistics, and student engineering development.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+                  <a href="mailto:info@baht.com" className="rounded-full bg-cyan-300 px-7 py-4 text-center font-bold text-slate-950 transition hover:bg-white">
+                    Contact for Sponsorship
+                  </a>
+                  <a href="#" className="rounded-full border border-white/25 px-7 py-4 text-center font-bold text-white/85 transition hover:border-cyan-200 hover:text-cyan-100">
+                    Download Sponsorship Deck
+                  </a>
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="hud-panel hud-right">
-            {telemetry.slice(2).map(([label, value]) => (
-              <div key={label} className="hud-row">
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </div>
-            ))}
-          </div>
-
-          <div className="scanner-line" />
-        </div>
-
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-black/25 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
-          <div className="pointer-events-none absolute left-1/2 top-0 h-full w-[80%] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,calc(0.04+var(--rov)*0.22)),transparent_66%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-black/35" style={{ opacity: Math.max(0.1, 1 - rovReveal * 0.72) }} />
-
-          <p className="relative text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
-          <h2 className="relative mt-4 text-4xl font-black md:text-6xl">
-            Support the next generation of engineers.
-          </h2>
-          <p className="relative mt-5 max-w-3xl text-white/60">
-            At depth, every breakthrough needs light. Partner with BAHT to support underwater robotics, field testing, and competition-ready engineering.
-          </p>
-
-          <div className="relative mt-12 grid gap-6 md:grid-cols-3">
-            {["Gold Sponsor", "Silver Sponsor", "Bronze Sponsor"].map((item) => (
-              <div key={item} className="sponsor-card flex h-44 items-center justify-center rounded-[2rem] border border-dashed border-white/25 bg-white/5 text-white/60 backdrop-blur-xl transition hover:border-cyan-200/50 hover:bg-cyan-200/10 hover:text-white">
-                {item}
-              </div>
-            ))}
+            <div className="relative mt-10 grid gap-4 text-center md:grid-cols-3">
+              {["Vehicle Development", "Competition Readiness", "Engineering Education"].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-black/20 px-5 py-5 text-sm font-semibold text-white/65">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -582,140 +631,25 @@ export default function Home() {
           50% { transform: scale(1.5); }
         }
 
-        .rov-reveal {
-          transform: translate(-50%, calc(70px - var(--rov) * 95px)) scale(calc(0.82 + var(--rov) * 0.22));
+        .sponsor-tier::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(120deg, transparent, rgba(103,232,249,0.12), transparent);
+          opacity: 0;
+          transform: translateX(-40%);
           transition: opacity 300ms ease;
         }
 
-        .rov-body {
-          position: absolute;
-          left: 50%;
-          top: 7%;
-          height: 110px;
-          width: 230px;
-          transform: translateX(-50%);
-          filter: drop-shadow(0 0 35px rgba(34,211,238,0.2));
+        .sponsor-tier:hover::before {
+          opacity: 1;
+          animation: sponsorShine 1.1s ease forwards;
         }
 
-        .rov-frame {
-          position: absolute;
-          inset: 18px 22px;
-          border: 2px solid rgba(148,221,255,0.35);
-          border-radius: 28px;
-          background:
-            linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)),
-            radial-gradient(circle at 50% 50%, rgba(34,211,238,0.14), rgba(0,0,0,0.45));
-          box-shadow: inset 0 0 30px rgba(103,232,249,0.08);
-        }
-
-        .rov-frame::before,
-        .rov-frame::after {
-          content: "";
-          position: absolute;
-          top: 50%;
-          height: 54px;
-          width: 54px;
-          border: 1px solid rgba(148,221,255,0.28);
-          border-radius: 18px;
-          background: rgba(2,6,23,0.62);
-          transform: translateY(-50%);
-        }
-
-        .rov-frame::before { left: -38px; }
-        .rov-frame::after { right: -38px; }
-
-        .rov-light {
-          position: absolute;
-          bottom: 22px;
-          height: 14px;
-          width: 14px;
-          border-radius: 999px;
-          background: rgba(224,251,255,0.95);
-          box-shadow: 0 0 18px rgba(186,230,253,0.95), 0 0 42px rgba(34,211,238,0.55);
-        }
-
-        .rov-light-left { left: 82px; }
-        .rov-light-right { right: 82px; }
-
-        .headlight {
-          position: absolute;
-          top: 105px;
-          height: 520px;
-          width: 260px;
-          transform-origin: top center;
-          background: linear-gradient(to bottom, rgba(186,230,253,calc(var(--rov)*0.28)), rgba(103,232,249,calc(var(--rov)*0.07)) 42%, transparent 82%);
-          filter: blur(14px);
-          mix-blend-mode: screen;
-        }
-
-        .headlight-left {
-          left: calc(50% - 210px);
-          transform: rotate(14deg) skewX(-12deg);
-        }
-
-        .headlight-right {
-          left: calc(50% - 50px);
-          transform: rotate(-14deg) skewX(12deg);
-        }
-
-        .hud-panel {
-          position: absolute;
-          top: 155px;
-          width: 190px;
-          border: 1px solid rgba(103,232,249,0.22);
-          border-radius: 18px;
-          background: rgba(2, 12, 27, calc(var(--rov) * 0.72));
-          padding: 14px;
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-          box-shadow: 0 0 30px rgba(34,211,238,calc(var(--rov)*0.14));
-          backdrop-filter: blur(12px);
-        }
-
-        .hud-left { left: calc(50% - 430px); }
-        .hud-right { right: calc(50% - 430px); }
-
-        .hud-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 18px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          padding: 8px 0;
-          font-size: 11px;
-          color: rgba(255,255,255,0.46);
-          letter-spacing: 0.12em;
-        }
-
-        .hud-row:last-child {
-          border-bottom: 0;
-        }
-
-        .hud-row strong {
-          color: rgba(207,250,254,0.95);
-          font-size: 11px;
-          font-weight: 800;
-          text-shadow: 0 0 12px rgba(103,232,249,0.5);
-        }
-
-        .scanner-line {
-          position: absolute;
-          left: 50%;
-          top: 125px;
-          height: 1px;
-          width: 520px;
-          transform: translateX(-50%);
-          background: linear-gradient(90deg, transparent, rgba(103,232,249,calc(var(--rov)*0.8)), transparent);
-          box-shadow: 0 0 20px rgba(103,232,249,calc(var(--rov)*0.7));
-          animation: scanner 2.8s ease-in-out infinite;
-        }
-
-        @keyframes scanner {
-          0%, 100% { opacity: 0.18; transform: translateX(-50%) translateY(0); }
-          50% { opacity: 1; transform: translateX(-50%) translateY(120px); }
-        }
-
-        .sponsor-card {
-          box-shadow: inset 0 0 calc(var(--rov)*34px) rgba(103,232,249,0.08);
+        @keyframes sponsorShine {
+          from { transform: translateX(-60%); }
+          to { transform: translateX(70%); }
         }
 
         .thruster-bar {
@@ -756,16 +690,6 @@ export default function Home() {
         @keyframes codePulse {
           0%, 100% { transform: scale(1); opacity: 0.78; }
           50% { transform: scale(1.12); opacity: 1; }
-        }
-
-        @media (max-width: 900px) {
-          .hud-panel {
-            display: none;
-          }
-
-          .scanner-line {
-            width: 280px;
-          }
         }
       `}</style>
     </main>
