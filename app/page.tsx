@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Team = {
   name: string;
@@ -53,6 +53,15 @@ export default function Home() {
 
   const sections = ["Mission", "Vehicle", "Team", "Sponsors", "Contact"];
 
+  const cinematicDepth = 1 - Math.pow(1 - depth, 2.4);
+  const abyssDepth = Math.max(0, (cinematicDepth - 0.56) / 0.44);
+  const rovReveal = Math.max(0, (cinematicDepth - 0.68) / 0.32);
+
+  const fish = useMemo(() => Array.from({ length: 28 }), []);
+  const bubbles = useMemo(() => Array.from({ length: 92 }), []);
+  const marineSnow = useMemo(() => Array.from({ length: 120 }), []);
+  const plankton = useMemo(() => Array.from({ length: 62 }), []);
+
   const vehicleCards = [
     {
       title: "Mechanical Design",
@@ -94,31 +103,38 @@ export default function Home() {
     },
   ];
 
-  const surfaceLight = Math.max(0.12, 1 - depth * 1.15);
-  const deepDarkness = Math.min(0.75, depth * 0.9);
-  const particleOpacity = 0.25 + depth * 0.45;
+  const surfaceLight = Math.max(0.03, 1 - cinematicDepth * 1.28);
+  const deepDarkness = Math.min(0.88, cinematicDepth * 1.04);
+  const particleOpacity = 0.18 + cinematicDepth * 0.62;
+  const rayOpacity = Math.max(0, 1 - cinematicDepth * 1.8);
 
   return (
     <main
       className="relative min-h-screen overflow-hidden text-white"
       style={{
-        background: `linear-gradient(135deg,
-          rgb(${8 - depth * 5}, ${47 - depth * 34}, ${73 - depth * 48}) 0%,
-          rgb(${6 - depth * 5}, ${31 - depth * 22}, ${58 - depth * 40}) 32%,
-          rgb(${3 - depth * 2}, ${20 - depth * 15}, ${38 - depth * 26}) 68%,
-          rgb(1, ${8 - depth * 5}, ${20 - depth * 12}) 100%
+        background: `linear-gradient(145deg,
+          rgb(${8 - cinematicDepth * 7}, ${54 - cinematicDepth * 48}, ${84 - cinematicDepth * 66}) 0%,
+          rgb(${6 - cinematicDepth * 5}, ${38 - cinematicDepth * 31}, ${70 - cinematicDepth * 56}) 34%,
+          rgb(${3 - cinematicDepth * 2}, ${22 - cinematicDepth * 18}, ${45 - cinematicDepth * 36}) 68%,
+          rgb(1, ${9 - cinematicDepth * 7}, ${22 - cinematicDepth * 18}) 100%
         )`,
-      }}
+        "--depth": cinematicDepth,
+        "--abyss": abyssDepth,
+        "--rov": rovReveal,
+      } as React.CSSProperties}
     >
+      {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
           className="absolute inset-0 transition-opacity duration-300"
           style={{
             opacity: surfaceLight,
             background:
-              "radial-gradient(circle at 35% 0%, rgba(125,211,252,0.38), transparent 35%), radial-gradient(circle at 80% 55%, rgba(14,165,233,0.16), transparent 35%)",
+              "radial-gradient(circle at 35% 0%, rgba(186,230,253,0.46), transparent 34%), radial-gradient(circle at 80% 55%, rgba(14,165,233,0.18), transparent 35%)",
           }}
         />
+
+        <div className="caustics" style={{ opacity: surfaceLight * 0.38 }} />
 
         <div
           className="absolute left-0 top-0 h-[45vh] w-full transition-opacity duration-300"
@@ -135,26 +151,26 @@ export default function Home() {
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.55)_100%)]" />
 
-        <div className="light-ray left-[18%]" style={{ opacity: surfaceLight }} />
-        <div className="light-ray left-[46%]" style={{ opacity: surfaceLight * 0.85 }} />
-        <div className="light-ray left-[72%]" style={{ opacity: surfaceLight * 0.7 }} />
+        <div className="light-ray left-[18%]" style={{ opacity: rayOpacity }} />
+        <div className="light-ray left-[46%]" style={{ opacity: rayOpacity * 0.85 }} />
+        <div className="light-ray left-[72%]" style={{ opacity: rayOpacity * 0.7 }} />
 
         <div className="abyss-fog" style={{ opacity: depth * 0.55 }} />
 
-        {Array.from({ length: 22 }).map((_, i) => (
+        {fish.map((_, i) => (
           <div
             key={`fish-${i}`}
             className={`fish fish-${(i % 6) + 1}`}
             style={{
-              opacity: 0.12 + particleOpacity * 0.35,
-              transform: `translateY(${depth * (i % 4) * 16}px)`,
+              opacity: 0.08 + particleOpacity * 0.32,
+              transform: `translateY(${cinematicDepth * (i % 5) * 28}px) scale(${1 - cinematicDepth * 0.22})`,
             }}
           >
             {["𓆝", "𓆟", "𓆜"][i % 3]}
           </div>
         ))}
 
-        {Array.from({ length: 75 }).map((_, i) => (
+        {bubbles.map((_, i) => (
           <div
             key={`bubble-${i}`}
             className="bubble"
@@ -164,27 +180,46 @@ export default function Home() {
               height: `${5 + (i % 6) * 4}px`,
               animationDelay: `${(i % 14) * 0.65}s`,
               animationDuration: `${8 + (i % 10)}s`,
-              opacity: particleOpacity,
+              opacity: particleOpacity * (0.45 + abyssDepth * 0.7),
             }}
           />
         ))}
 
-        {Array.from({ length: 46 }).map((_, i) => (
+        {marineSnow.map((_, i) => (
           <div
-            key={`star-${i}`}
+            key={`snow-${i}`}
+            className="marine-snow"
+            style={{
+              left: `${(i * 37) % 100}%`,
+              top: `${(i * 19) % 100}%`,
+              width: `${1 + (i % 4)}px`,
+              height: `${1 + (i % 4)}px`,
+              animationDelay: `${(i % 30) * 0.22}s`,
+              animationDuration: `${10 + (i % 14)}s`,
+              opacity: 0.05 + cinematicDepth * 0.46,
+            }}
+          />
+        ))}
+
+        {plankton.map((_, i) => (
+          <div
+            key={`plankton-${i}`}
             className="star"
             style={{
               left: `${(i * 29) % 100}%`,
               top: `${10 + ((i * 23) % 82)}%`,
               animationDelay: `${i * 0.25}s`,
-              opacity: 0.12 + depth * 0.45,
+              opacity: 0.08 + cinematicDepth * 0.42,
             }}
           >
             ✦
           </div>
         ))}
+
+        <div className="depth-vignette" />
       </div>
 
+      {/* Navbar */}
       <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-white/10 bg-[#031426]/60 px-6 py-4 backdrop-blur-xl">
         <div className="relative inline-block">
           <span className="text-xl font-black tracking-[0.3em]">BAHT</span>
@@ -202,6 +237,18 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* Depth indicator */}
+      <div className="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 text-[10px] tracking-[0.24em] text-white/35 md:flex">
+        <div className="h-36 w-px overflow-hidden rounded-full bg-white/10">
+          <div
+            className="w-full rounded-full bg-cyan-200/70 transition-all duration-300"
+            style={{ height: `${12 + cinematicDepth * 88}%` }}
+          />
+        </div>
+        <span>{Math.round(cinematicDepth * 300)}M</span>
+      </div>
+
+      {/* Hero */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-28 text-center">
         <p className="mb-6 text-xs font-semibold tracking-[0.5em] text-cyan-200">
           BLUEWATER ADVANCED HYDROGRAPHIC TEAM
@@ -234,6 +281,7 @@ export default function Home() {
         </p>
       </section>
 
+      {/* Mission */}
       <section id="mission" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">MISSION</p>
@@ -249,6 +297,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Vehicle */}
       <section id="vehicle" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">VEHICLE</p>
@@ -265,6 +314,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Team */}
       <section id="team" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">TEAM</p>
@@ -294,18 +344,39 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Sponsors */}
       <section id="sponsors" className="relative z-10 px-6 py-32">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-white/5 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
-          <div className="pointer-events-none absolute left-1/2 top-0 h-full w-[55%] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.18),transparent_65%)]" />
+        <div
+          className="rov-reveal pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2"
+          style={{ opacity: rovReveal }}
+        >
+          <div className="rov-body">
+            <div className="rov-frame" />
+            <div className="rov-light rov-light-left" />
+            <div className="rov-light rov-light-right" />
+          </div>
+          <div className="headlight headlight-left" />
+          <div className="headlight headlight-right" />
+        </div>
+
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-black/25 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
+          <div className="pointer-events-none absolute left-1/2 top-0 h-full w-[80%] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,calc(0.04+var(--rov)*0.22)),transparent_66%)]" />
+          <div
+            className="pointer-events-none absolute inset-0 bg-black/35"
+            style={{ opacity: Math.max(0.1, 1 - rovReveal * 0.72) }}
+          />
 
           <p className="relative text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
           <h2 className="relative mt-4 text-4xl font-black md:text-6xl">
             Support the next generation of engineers.
           </h2>
+          <p className="relative mt-5 max-w-3xl text-white/60">
+            At depth, every breakthrough needs light. Partner with BAHT to support underwater robotics, field testing, and competition-ready engineering.
+          </p>
 
           <div className="relative mt-12 grid gap-6 md:grid-cols-3">
             {["Gold Sponsor", "Silver Sponsor", "Bronze Sponsor"].map((item) => (
-              <div key={item} className="flex h-44 items-center justify-center rounded-[2rem] border border-dashed border-white/30 bg-white/5 text-white/60 backdrop-blur-xl">
+              <div key={item} className="sponsor-card flex h-44 items-center justify-center rounded-[2rem] border border-dashed border-white/25 bg-white/5 text-white/60 backdrop-blur-xl transition hover:border-cyan-200/50 hover:bg-cyan-200/10 hover:text-white">
                 {item}
               </div>
             ))}
@@ -313,6 +384,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contact */}
       <section id="contact" className="relative z-10 px-6 py-36 text-center">
         <div className="pointer-events-none absolute left-1/2 top-8 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-300/10 blur-3xl" />
 
@@ -326,10 +398,14 @@ export default function Home() {
         </a>
       </section>
 
+      {/* Modal */}
       {activeTeam && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-6 backdrop-blur-md">
           <div className="relative w-full max-w-3xl rounded-[2rem] border border-cyan-200/20 bg-[#031426]/95 p-8 shadow-[0_0_80px_rgba(34,211,238,0.18)]">
-            <button onClick={() => setActiveTeam(null)} className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-white/70 hover:text-white">
+            <button
+              onClick={() => setActiveTeam(null)}
+              className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-white/70 hover:text-white"
+            >
               ✕
             </button>
 
@@ -354,6 +430,31 @@ export default function Home() {
       )}
 
       <style>{`
+        .caustics {
+          position: absolute;
+          inset: -20%;
+          background-image:
+            linear-gradient(115deg, transparent 0 44%, rgba(255,255,255,0.08) 46%, transparent 50%),
+            linear-gradient(65deg, transparent 0 42%, rgba(125,211,252,0.08) 45%, transparent 52%);
+          background-size: 180px 180px, 240px 240px;
+          mix-blend-mode: screen;
+          filter: blur(10px);
+          animation: causticDrift 18s linear infinite;
+        }
+
+        @keyframes causticDrift {
+          from { transform: translate3d(-3%, -2%, 0) rotate(0deg); }
+          to { transform: translate3d(3%, 2%, 0) rotate(1deg); }
+        }
+
+        .depth-vignette {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(circle at 50% 12%, transparent 0 24%, rgba(0,0,0,calc(0.24 + var(--depth)*0.42)) 82%),
+            linear-gradient(to bottom, transparent 0%, rgba(0,0,0,calc(var(--abyss)*0.54)) 70%, rgba(0,0,0,calc(var(--abyss)*0.82)) 100%);
+        }
+
         .light-ray {
           position: absolute;
           top: -10%;
@@ -416,6 +517,19 @@ export default function Home() {
           to { transform: translateY(-120vh) scale(1.4); opacity: 0; }
         }
 
+        .marine-snow {
+          position: absolute;
+          border-radius: 999px;
+          background: rgba(226,246,255,0.75);
+          box-shadow: 0 0 10px rgba(125,211,252,0.35);
+          animation: snowDrift linear infinite;
+        }
+
+        @keyframes snowDrift {
+          from { transform: translate3d(0, -10vh, 0); }
+          to { transform: translate3d(28px, 110vh, 0); }
+        }
+
         .star {
           position: absolute;
           color: rgba(255,255,255,0.32);
@@ -426,6 +540,86 @@ export default function Home() {
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.5); }
+        }
+
+        .rov-reveal {
+          transform: translate(-50%, calc(70px - var(--rov) * 95px)) scale(calc(0.82 + var(--rov) * 0.22));
+          transition: opacity 300ms ease;
+        }
+
+        .rov-body {
+          position: absolute;
+          left: 50%;
+          top: 7%;
+          height: 110px;
+          width: 230px;
+          transform: translateX(-50%);
+          filter: drop-shadow(0 0 35px rgba(34,211,238,0.2));
+        }
+
+        .rov-frame {
+          position: absolute;
+          inset: 18px 22px;
+          border: 2px solid rgba(148,221,255,0.35);
+          border-radius: 28px;
+          background:
+            linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)),
+            radial-gradient(circle at 50% 50%, rgba(34,211,238,0.14), rgba(0,0,0,0.45));
+          box-shadow: inset 0 0 30px rgba(103,232,249,0.08);
+        }
+
+        .rov-frame::before,
+        .rov-frame::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          height: 54px;
+          width: 54px;
+          border: 1px solid rgba(148,221,255,0.28);
+          border-radius: 18px;
+          background: rgba(2,6,23,0.62);
+          transform: translateY(-50%);
+        }
+
+        .rov-frame::before { left: -38px; }
+        .rov-frame::after { right: -38px; }
+
+        .rov-light {
+          position: absolute;
+          bottom: 22px;
+          height: 14px;
+          width: 14px;
+          border-radius: 999px;
+          background: rgba(224,251,255,0.95);
+          box-shadow: 0 0 18px rgba(186,230,253,0.95), 0 0 42px rgba(34,211,238,0.55);
+        }
+
+        .rov-light-left { left: 82px; }
+        .rov-light-right { right: 82px; }
+
+        .headlight {
+          position: absolute;
+          top: 105px;
+          height: 520px;
+          width: 260px;
+          transform-origin: top center;
+          background: linear-gradient(to bottom, rgba(186,230,253,calc(var(--rov)*0.28)), rgba(103,232,249,calc(var(--rov)*0.07)) 42%, transparent 82%);
+          filter: blur(14px);
+          mix-blend-mode: screen;
+        }
+
+        .headlight-left {
+          left: calc(50% - 210px);
+          transform: rotate(14deg) skewX(-12deg);
+        }
+
+        .headlight-right {
+          left: calc(50% - 50px);
+          transform: rotate(-14deg) skewX(12deg);
+        }
+
+        .sponsor-card {
+          box-shadow: inset 0 0 calc(var(--rov)*34px) rgba(103,232,249,0.08);
         }
 
         .mechanical-icon {
