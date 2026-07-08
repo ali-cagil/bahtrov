@@ -77,6 +77,21 @@ export default function Home() {
     },
   ];
 
+  const telemetry = [
+    ["DEPTH", `${Math.round(cinematicDepth * 300)}M`],
+    ["SIGNAL", "STABLE"],
+    ["PAYLOAD", "READY"],
+    ["BAHT-01", "ONLINE"],
+  ];
+
+  const dashboard = [
+    ["Pressure", `${(1 + cinematicDepth * 30).toFixed(1)} bar`],
+    ["Battery", "15.8V"],
+    ["Thrusters", "6 ACTIVE"],
+    ["Tether Link", "ETHERNET"],
+    ["Camera Feed", "H.264 LIVE"],
+  ];
+
   const teams: Team[] = [
     {
       name: "Mechanical",
@@ -123,7 +138,6 @@ export default function Home() {
         "--rov": rovReveal,
       } as React.CSSProperties}
     >
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
           className="absolute inset-0 transition-opacity duration-300"
@@ -144,11 +158,7 @@ export default function Home() {
           }}
         />
 
-        <div
-          className="absolute inset-0 bg-black transition-opacity duration-300"
-          style={{ opacity: deepDarkness }}
-        />
-
+        <div className="absolute inset-0 bg-black transition-opacity duration-300" style={{ opacity: deepDarkness }} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.55)_100%)]" />
 
         <div className="light-ray left-[18%]" style={{ opacity: rayOpacity }} />
@@ -219,13 +229,10 @@ export default function Home() {
         <div className="depth-vignette" />
       </div>
 
-      {/* Navbar */}
       <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-white/10 bg-[#031426]/60 px-6 py-4 backdrop-blur-xl">
         <div className="relative inline-block">
           <span className="text-xl font-black tracking-[0.3em]">BAHT</span>
-          <span className="absolute -right-7 bottom-0 text-[8px] italic tracking-[0.15em] text-white/20">
-            @nevai
-          </span>
+          <span className="absolute -right-7 bottom-0 text-[8px] italic tracking-[0.15em] text-white/20">@nevai</span>
         </div>
 
         <div className="hidden gap-8 text-sm text-white/70 md:flex">
@@ -237,18 +244,13 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Depth indicator */}
       <div className="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 text-[10px] tracking-[0.24em] text-white/35 md:flex">
         <div className="h-36 w-px overflow-hidden rounded-full bg-white/10">
-          <div
-            className="w-full rounded-full bg-cyan-200/70 transition-all duration-300"
-            style={{ height: `${12 + cinematicDepth * 88}%` }}
-          />
+          <div className="w-full rounded-full bg-cyan-200/70 transition-all duration-300" style={{ height: `${12 + cinematicDepth * 88}%` }} />
         </div>
         <span>{Math.round(cinematicDepth * 300)}M</span>
       </div>
 
-      {/* Hero */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-28 text-center">
         <p className="mb-6 text-xs font-semibold tracking-[0.5em] text-cyan-200">
           BLUEWATER ADVANCED HYDROGRAPHIC TEAM
@@ -261,9 +263,7 @@ export default function Home() {
         </p>
 
         <p className="mt-6 max-w-4xl text-white/65">
-          BAHT is a multidisciplinary engineering team developing robust,
-          modular Remotely Operated Vehicles (ROVs) tailored for high-pressure
-          subsurface exploration and hydrographic research.
+          BAHT is a multidisciplinary engineering team developing robust, modular Remotely Operated Vehicles (ROVs) tailored for high-pressure subsurface exploration and hydrographic research.
         </p>
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -281,7 +281,6 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Mission */}
       <section id="mission" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">MISSION</p>
@@ -289,32 +288,61 @@ export default function Home() {
             Conquering the Pressures of Subsurface Exploration.
           </h2>
           <p className="mt-6 max-w-4xl text-lg text-white/65">
-            BAHT is dedicated to designing reliable, modular underwater
-            platforms engineered to bridge the gap between subsurface logistics
-            and deep-sea environments through robust mechanical, payload, and
-            communication architectures.
+            BAHT is dedicated to designing reliable, modular underwater platforms engineered to bridge the gap between subsurface logistics and deep-sea environments through robust mechanical, payload, and communication architectures.
           </p>
         </div>
       </section>
 
-      {/* Vehicle */}
       <section id="vehicle" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">VEHICLE</p>
           <h2 className="mt-4 text-4xl font-black md:text-6xl">Built for the Deep</h2>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {vehicleCards.map((card) => (
-              <div key={card.title} className="rounded-[2rem] border border-white/10 bg-white/10 p-8 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:bg-white/15 hover:shadow-[0_0_40px_rgba(34,211,238,0.16)]">
-                <h3 className="text-2xl font-bold text-cyan-200">{card.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-white/65">{card.text}</p>
+          <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_360px]">
+            <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-1">
+              {vehicleCards.map((card) => (
+                <div key={card.title} className="rounded-[2rem] border border-white/10 bg-white/10 p-8 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:bg-white/15 hover:shadow-[0_0_40px_rgba(34,211,238,0.16)]">
+                  <h3 className="text-2xl font-bold text-cyan-200">{card.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-white/65">{card.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] border border-cyan-200/15 bg-black/30 p-6 backdrop-blur-xl shadow-[0_0_50px_rgba(34,211,238,0.08)]">
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(103,232,249,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,0.05)_1px,transparent_1px)] bg-[size:28px_28px]" />
+              <div className="relative">
+                <p className="text-xs tracking-[0.35em] text-cyan-200">LIVE SYSTEM</p>
+                <h3 className="mt-3 text-2xl font-black">Vehicle Telemetry</h3>
+
+                <div className="mt-7 space-y-4">
+                  {dashboard.map(([label, value]) => (
+                    <div key={label} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <span className="text-xs text-white/45">{label}</span>
+                      <span className="font-mono text-sm text-cyan-100">{value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-2xl border border-cyan-200/10 bg-cyan-200/5 p-4">
+                  <div className="mb-3 flex items-center justify-between text-xs text-white/45">
+                    <span>THRUSTER VECTOR MATRIX</span>
+                    <span>45°</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                    <div className="thruster-bar h-full rounded-full bg-cyan-200/80" />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center gap-3 text-xs text-cyan-100/80">
+                  <span className="h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_12px_rgba(103,232,249,0.9)]" />
+                  AUTOPILOT LINK ACTIVE
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Team */}
       <section id="team" className="relative z-10 px-6 py-32">
         <div className="mx-auto max-w-6xl">
           <p className="text-sm tracking-[0.4em] text-cyan-200">TEAM</p>
@@ -344,27 +372,41 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sponsors */}
       <section id="sponsors" className="relative z-10 px-6 py-32">
-        <div
-          className="rov-reveal pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2"
-          style={{ opacity: rovReveal }}
-        >
+        <div className="rov-reveal pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2" style={{ opacity: rovReveal }}>
           <div className="rov-body">
             <div className="rov-frame" />
             <div className="rov-light rov-light-left" />
             <div className="rov-light rov-light-right" />
           </div>
+
           <div className="headlight headlight-left" />
           <div className="headlight headlight-right" />
+
+          <div className="hud-panel hud-left">
+            {telemetry.slice(0, 2).map(([label, value]) => (
+              <div key={label} className="hud-row">
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="hud-panel hud-right">
+            {telemetry.slice(2).map(([label, value]) => (
+              <div key={label} className="hud-row">
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="scanner-line" />
         </div>
 
         <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-black/25 p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(34,211,238,0.08)]">
           <div className="pointer-events-none absolute left-1/2 top-0 h-full w-[80%] -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(103,232,249,calc(0.04+var(--rov)*0.22)),transparent_66%)]" />
-          <div
-            className="pointer-events-none absolute inset-0 bg-black/35"
-            style={{ opacity: Math.max(0.1, 1 - rovReveal * 0.72) }}
-          />
+          <div className="pointer-events-none absolute inset-0 bg-black/35" style={{ opacity: Math.max(0.1, 1 - rovReveal * 0.72) }} />
 
           <p className="relative text-sm tracking-[0.4em] text-cyan-200">SPONSORS</p>
           <h2 className="relative mt-4 text-4xl font-black md:text-6xl">
@@ -384,7 +426,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact */}
       <section id="contact" className="relative z-10 px-6 py-36 text-center">
         <div className="pointer-events-none absolute left-1/2 top-8 h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-300/10 blur-3xl" />
 
@@ -398,7 +439,6 @@ export default function Home() {
         </a>
       </section>
 
-      {/* Modal */}
       {activeTeam && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-6 backdrop-blur-md">
           <div className="relative w-full max-w-3xl rounded-[2rem] border border-cyan-200/20 bg-[#031426]/95 p-8 shadow-[0_0_80px_rgba(34,211,238,0.18)]">
@@ -618,8 +658,75 @@ export default function Home() {
           transform: rotate(-14deg) skewX(12deg);
         }
 
+        .hud-panel {
+          position: absolute;
+          top: 155px;
+          width: 190px;
+          border: 1px solid rgba(103,232,249,0.22);
+          border-radius: 18px;
+          background: rgba(2, 12, 27, calc(var(--rov) * 0.72));
+          padding: 14px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+          box-shadow: 0 0 30px rgba(34,211,238,calc(var(--rov)*0.14));
+          backdrop-filter: blur(12px);
+        }
+
+        .hud-left { left: calc(50% - 430px); }
+        .hud-right { right: calc(50% - 430px); }
+
+        .hud-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding: 8px 0;
+          font-size: 11px;
+          color: rgba(255,255,255,0.46);
+          letter-spacing: 0.12em;
+        }
+
+        .hud-row:last-child {
+          border-bottom: 0;
+        }
+
+        .hud-row strong {
+          color: rgba(207,250,254,0.95);
+          font-size: 11px;
+          font-weight: 800;
+          text-shadow: 0 0 12px rgba(103,232,249,0.5);
+        }
+
+        .scanner-line {
+          position: absolute;
+          left: 50%;
+          top: 125px;
+          height: 1px;
+          width: 520px;
+          transform: translateX(-50%);
+          background: linear-gradient(90deg, transparent, rgba(103,232,249,calc(var(--rov)*0.8)), transparent);
+          box-shadow: 0 0 20px rgba(103,232,249,calc(var(--rov)*0.7));
+          animation: scanner 2.8s ease-in-out infinite;
+        }
+
+        @keyframes scanner {
+          0%, 100% { opacity: 0.18; transform: translateX(-50%) translateY(0); }
+          50% { opacity: 1; transform: translateX(-50%) translateY(120px); }
+        }
+
         .sponsor-card {
           box-shadow: inset 0 0 calc(var(--rov)*34px) rgba(103,232,249,0.08);
+        }
+
+        .thruster-bar {
+          width: 72%;
+          animation: thrusterPulse 2.2s ease-in-out infinite;
+          box-shadow: 0 0 18px rgba(103,232,249,0.45);
+        }
+
+        @keyframes thrusterPulse {
+          0%, 100% { width: 54%; opacity: 0.6; }
+          50% { width: 88%; opacity: 1; }
         }
 
         .mechanical-icon {
@@ -649,6 +756,16 @@ export default function Home() {
         @keyframes codePulse {
           0%, 100% { transform: scale(1); opacity: 0.78; }
           50% { transform: scale(1.12); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+          .hud-panel {
+            display: none;
+          }
+
+          .scanner-line {
+            width: 280px;
+          }
         }
       `}</style>
     </main>
