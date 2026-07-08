@@ -61,6 +61,29 @@ export default function Home() {
   const marineSnow = useMemo(() => Array.from({ length: 120 }), []);
   const plankton = useMemo(() => Array.from({ length: 62 }), []);
 
+  const missionTimeline = [
+    {
+      depth: "SURFACE",
+      title: "Concept & Research",
+      text: "Mission requirements, hydrodynamic constraints, system architecture, and sponsor-facing engineering goals are defined.",
+    },
+    {
+      depth: "TWILIGHT ZONE",
+      title: "Integrated Engineering",
+      text: "Mechanical, electronics, and software systems converge into a modular ROV platform built for controlled underwater operation.",
+    },
+    {
+      depth: "ABYSS APPROACH",
+      title: "Reliability Testing",
+      text: "Pressure vessel sealing, tether communication, leak detection, power distribution, and thruster response are validated.",
+    },
+    {
+      depth: "DEPLOYMENT",
+      title: "Competition-Ready Vehicle",
+      text: "The BAHT ROV is prepared for demonstrations, competitions, sponsor showcases, and field-ready engineering presentation.",
+    },
+  ];
+
   const vehicleCards = [
     {
       title: "Mechanical Design",
@@ -308,6 +331,37 @@ export default function Home() {
           <p className="mt-6 max-w-4xl text-lg text-white/65">
             BAHT is dedicated to designing reliable, modular underwater platforms engineered to bridge the gap between subsurface logistics and deep-sea environments through robust mechanical, payload, and communication architectures.
           </p>
+
+          <div className="mission-timeline relative mt-20 overflow-hidden rounded-[3rem] border border-cyan-200/10 bg-black/20 p-6 backdrop-blur-xl md:p-10">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(103,232,249,0.18),transparent_42%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(103,232,249,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,0.035)_1px,transparent_1px)] bg-[size:32px_32px]" />
+
+            <div className="relative mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.35em] text-cyan-200/80">Ocean Descent</p>
+                <h3 className="mt-3 text-3xl font-black md:text-4xl">From surface concept to deep-sea deployment.</h3>
+              </div>
+              <p className="max-w-sm text-sm leading-7 text-white/50">
+                The BAHT development path is designed like a descent: each stage takes the vehicle closer to reliable underwater operation.
+              </p>
+            </div>
+
+            <div className="relative grid gap-5 lg:grid-cols-4">
+              {missionTimeline.map((step, index) => (
+                <div key={step.title} className="timeline-card group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 transition duration-300 hover:-translate-y-2 hover:border-cyan-200/40 hover:bg-cyan-200/[0.08]">
+                  <div className="absolute right-5 top-5 font-mono text-5xl font-black text-white/[0.04]">0{index + 1}</div>
+                  <div className="relative">
+                    <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full border border-cyan-200/20 bg-cyan-200/10 font-mono text-sm font-black text-cyan-100 shadow-[0_0_24px_rgba(103,232,249,0.12)]">
+                      {index + 1}
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-200/75">{step.depth}</p>
+                    <h4 className="mt-3 text-xl font-black text-white">{step.title}</h4>
+                    <p className="mt-4 text-sm leading-7 text-white/55">{step.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -631,6 +685,7 @@ export default function Home() {
           50% { transform: scale(1.5); }
         }
 
+        .timeline-card::before,
         .sponsor-tier::before {
           content: "";
           position: absolute;
@@ -642,6 +697,7 @@ export default function Home() {
           transition: opacity 300ms ease;
         }
 
+        .timeline-card:hover::before,
         .sponsor-tier:hover::before {
           opacity: 1;
           animation: sponsorShine 1.1s ease forwards;
@@ -650,6 +706,16 @@ export default function Home() {
         @keyframes sponsorShine {
           from { transform: translateX(-60%); }
           to { transform: translateX(70%); }
+        }
+
+        .mission-timeline::after {
+          content: "";
+          position: absolute;
+          left: 10%;
+          right: 10%;
+          bottom: 36px;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(103,232,249,0.22), transparent);
         }
 
         .thruster-bar {
